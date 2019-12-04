@@ -6,11 +6,11 @@
 #include<sstream>
 #include<array>
 #include<tuple>
-//struct ShaderProgramSource {
-//	std::string vertexShader;
-//	std::string fragmentShader;
-//};
-static std::tuple<std::string, std::string> ParseShader(const std::string& filepath) {
+struct ShaderProgramSource {
+	std::string vertexShader;
+	std::string fragmentShader;
+};
+static ShaderProgramSource ParseShader(const std::string& filepath) {
 	std::ifstream stream(filepath);
 	enum class typeShader {
 		ERROR = -1, VERTEX = 0, FRAGMENT
@@ -35,8 +35,8 @@ static std::tuple<std::string, std::string> ParseShader(const std::string& filep
 
 	std::string vs = ss[0].str();
 	std::string fs = ss[1].str();
-	return std::make_pair(vs, fs);
-	
+	//return std::make_pair(vs, fs);
+	return { vs, fs };
 	/*return { ss[0].str(), ss[1].str() };*/
 	
 }
@@ -119,12 +119,10 @@ int main(void)
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
 	
-	std::string  fs;
 
-	std::tuple<std::string, std::string>source =  ParseShader("res/shaders/Basic.shader");
+	auto source =  ParseShader("res/shaders/Basic.shader");
 
-	std::string vs = std::get<0>(source);
-	unsigned int shader = CreateShader(vs, std::get<1>(source));
+	unsigned int shader = CreateShader(source.vertexShader, source.fragmentShader);
 	glUseProgram(shader);
 	/*std::cout << "Vertex123" << std::endl;
 	std::cout << source.vertexShader << std::endl;

@@ -4,12 +4,12 @@
 #include<fstream>
 #include<string>
 #include<sstream>
-
-struct ShaderProgramSource {
-	std::string vertexShader;
-	std::string fragmentShader;
-};
-static ShaderProgramSource ParseShader(const std::string& filepath) {
+#include<array>
+//struct ShaderProgramSource {
+//	std::string vertexShader;
+//	std::string fragmentShader;
+//};
+static std::array<std::string, 2> ParseShader(const std::string& filepath) {
 	std::ifstream stream(filepath);
 	enum class typeShader {
 		ERROR = -1, VERTEX = 0, FRAGMENT
@@ -31,7 +31,17 @@ static ShaderProgramSource ParseShader(const std::string& filepath) {
 			ss[(int)type] << line << '\n';
 		}
 	}
-	return { ss[0].str(), ss[1].str() };
+
+	std::string vs = ss[0].str();
+	std::string fs = ss[1].str();
+
+	std::array<std::string, 2> results;
+	results[0] = ss[0].str();
+	results[1] = ss[1].str();
+	return results;
+	
+	/*return { ss[0].str(), ss[1].str() };*/
+	
 }
 
 
@@ -73,6 +83,7 @@ static unsigned int  CreateShader(const std::string& vertexShader, const std::st
 
 int main(void)
 {
+	
 	GLFWwindow* window;
 
 	/* Initialize the library */
@@ -84,7 +95,7 @@ int main(void)
 	if (!window)
 	{
 		glfwTerminate();
-		return -1;x
+		return -1;
 	}
 
 
@@ -111,17 +122,19 @@ int main(void)
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
 	
-	ShaderProgramSource source = ParseShader("res/shaders/Basic.shader");
+	std::string vs, fs;
+
+	std::array<std::string, 2>source =  ParseShader("res/shaders/Basic.shader");
 
 	
-	unsigned int shader = CreateShader(source.vertexShader, source.fragmentShader);
+	unsigned int shader = CreateShader(source[0], source[1]);
 	glUseProgram(shader);
 	/*std::cout << "Vertex123" << std::endl;
 	std::cout << source.vertexShader << std::endl;
 	std::cout << "Fragment123" << std::endl;
 	std::cout << source.fragmentShader << std::endl;*/
 	
-
+	
 
 		/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window))
